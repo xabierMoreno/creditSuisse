@@ -1,11 +1,11 @@
 package com.example.creditSuisse.services.impl;
 
 import com.example.creditSuisse.entities.Log;
-import com.example.creditSuisse.entities.LogDto;
 import com.example.creditSuisse.entities.LogLine;
 import com.example.creditSuisse.repository.LogRepository;
 import com.example.creditSuisse.services.LogService;
 import com.google.common.collect.Lists;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,20 +13,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
 @Service
 public class LogServiceImpl implements LogService {
 
+    private static final Logger LOGGER = Logger.getLogger(LogServiceImpl.class);
+
     @Autowired
     private LogRepository  logRepository;
 
     @Override
     public void saveLogs(List<LogLine> logsList) {
-
+        LOGGER.debug("Begin Save Logs");
         Map<String, LogLine> collect = getLogsGrouped(logsList);
     
         List<Log> logList = new ArrayList<>();
@@ -34,17 +34,22 @@ public class LogServiceImpl implements LogService {
             logList.add(mapLogLinesToLog(pair.getValue()));
         }        
         logRepository.saveAll(logList);
+        LOGGER.debug("Save Logs Correctly");
     }
 
     @Override
     public List<Log> findAll() {
+        LOGGER.debug("Begin Find All Logs");
         Iterable<Log> logList = logRepository.findAll();
+        LOGGER.debug("Find All Logs Correctly");
         return Lists.newArrayList(logList);
     }
 
     @Override
     public List<Log> getLogsByAlertType(boolean alert) {
+        LOGGER.debug("Find Logs By Alert" + alert);
         List<Log> logList = logRepository.findByAlert(alert);
+        LOGGER.debug("Find Logs By Alert" + alert + "correct");
         return logList;
     }
 
